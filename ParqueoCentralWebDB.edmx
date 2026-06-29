@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ParqueoCentralWebModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EspacioEstacionamiento">
+          <Key>
+            <PropertyRef Name="IdEspacio" />
+          </Key>
+          <Property Name="IdEspacio" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoEspacio" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="TipoEspacio" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Estado" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Activo" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MovimientoEstacionamiento">
+          <Key>
+            <PropertyRef Name="IdMovimiento" />
+          </Key>
+          <Property Name="IdMovimiento" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdVehiculo" Type="int" Nullable="false" />
+          <Property Name="IdEspacio" Type="int" Nullable="false" />
+          <Property Name="FechaHoraEntrada" Type="datetime" Nullable="false" />
+          <Property Name="FechaHoraSalida" Type="datetime" />
+          <Property Name="EstadoMovimiento" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MontoCobrado" Type="numeric" Precision="18" Scale="2" />
+          <Property Name="UsuarioRegistro" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Vehiculo">
+          <Key>
+            <PropertyRef Name="IdVehiculo" />
+          </Key>
+          <Property Name="IdVehiculo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Placa" Type="nvarchar" MaxLength="8" Nullable="false" />
+          <Property Name="TipoVehiculo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Propietario" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Contacto" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_MovimientoEstacionamiento_EspacioEstacionamiento">
+          <End Role="EspacioEstacionamiento" Type="Self.EspacioEstacionamiento" Multiplicity="1" />
+          <End Role="MovimientoEstacionamiento" Type="Self.MovimientoEstacionamiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EspacioEstacionamiento">
+              <PropertyRef Name="IdEspacio" />
+            </Principal>
+            <Dependent Role="MovimientoEstacionamiento">
+              <PropertyRef Name="IdEspacio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MovimientoEstacionamiento_Vehiculo">
+          <End Role="Vehiculo" Type="Self.Vehiculo" Multiplicity="1" />
+          <End Role="MovimientoEstacionamiento" Type="Self.MovimientoEstacionamiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehiculo">
+              <PropertyRef Name="IdVehiculo" />
+            </Principal>
+            <Dependent Role="MovimientoEstacionamiento">
+              <PropertyRef Name="IdVehiculo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ParqueoCentralWebModelStoreContainer">
+          <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EspacioEstacionamiento" EntityType="Self.EspacioEstacionamiento" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MovimientoEstacionamiento" EntityType="Self.MovimientoEstacionamiento" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vehiculo" EntityType="Self.Vehiculo" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_MovimientoEstacionamiento_EspacioEstacionamiento" Association="Self.FK_MovimientoEstacionamiento_EspacioEstacionamiento">
+            <End Role="EspacioEstacionamiento" EntitySet="EspacioEstacionamiento" />
+            <End Role="MovimientoEstacionamiento" EntitySet="MovimientoEstacionamiento" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MovimientoEstacionamiento_Vehiculo" Association="Self.FK_MovimientoEstacionamiento_Vehiculo">
+            <End Role="Vehiculo" EntitySet="Vehiculo" />
+            <End Role="MovimientoEstacionamiento" EntitySet="MovimientoEstacionamiento" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ParqueoCentralWebModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="Guid" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EspacioEstacionamiento">
+          <Key>
+            <PropertyRef Name="IdEspacio" />
+          </Key>
+          <Property Name="IdEspacio" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoEspacio" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TipoEspacio" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Estado" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Activo" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="MovimientoEstacionamiento" Relationship="Self.FK_MovimientoEstacionamiento_EspacioEstacionamiento" FromRole="EspacioEstacionamiento" ToRole="MovimientoEstacionamiento" />
+        </EntityType>
+        <EntityType Name="MovimientoEstacionamiento">
+          <Key>
+            <PropertyRef Name="IdMovimiento" />
+          </Key>
+          <Property Name="IdMovimiento" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdVehiculo" Type="Int32" Nullable="false" />
+          <Property Name="IdEspacio" Type="Int32" Nullable="false" />
+          <Property Name="FechaHoraEntrada" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FechaHoraSalida" Type="DateTime" Precision="3" />
+          <Property Name="EstadoMovimiento" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MontoCobrado" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="UsuarioRegistro" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="EspacioEstacionamiento" Relationship="Self.FK_MovimientoEstacionamiento_EspacioEstacionamiento" FromRole="MovimientoEstacionamiento" ToRole="EspacioEstacionamiento" />
+          <NavigationProperty Name="Vehiculo" Relationship="Self.FK_MovimientoEstacionamiento_Vehiculo" FromRole="MovimientoEstacionamiento" ToRole="Vehiculo" />
+        </EntityType>
+        <EntityType Name="Vehiculo">
+          <Key>
+            <PropertyRef Name="IdVehiculo" />
+          </Key>
+          <Property Name="IdVehiculo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Placa" Type="String" MaxLength="8" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TipoVehiculo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Propietario" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Contacto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="MovimientoEstacionamiento" Relationship="Self.FK_MovimientoEstacionamiento_Vehiculo" FromRole="Vehiculo" ToRole="MovimientoEstacionamiento" />
+        </EntityType>
+        <Association Name="FK_MovimientoEstacionamiento_EspacioEstacionamiento">
+          <End Role="EspacioEstacionamiento" Type="Self.EspacioEstacionamiento" Multiplicity="1" />
+          <End Role="MovimientoEstacionamiento" Type="Self.MovimientoEstacionamiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EspacioEstacionamiento">
+              <PropertyRef Name="IdEspacio" />
+            </Principal>
+            <Dependent Role="MovimientoEstacionamiento">
+              <PropertyRef Name="IdEspacio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MovimientoEstacionamiento_Vehiculo">
+          <End Role="Vehiculo" Type="Self.Vehiculo" Multiplicity="1" />
+          <End Role="MovimientoEstacionamiento" Type="Self.MovimientoEstacionamiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehiculo">
+              <PropertyRef Name="IdVehiculo" />
+            </Principal>
+            <Dependent Role="MovimientoEstacionamiento">
+              <PropertyRef Name="IdVehiculo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ParqueoCentralDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
+          <EntitySet Name="EspacioEstacionamiento" EntityType="Self.EspacioEstacionamiento" />
+          <EntitySet Name="MovimientoEstacionamiento" EntityType="Self.MovimientoEstacionamiento" />
+          <EntitySet Name="Vehiculo" EntityType="Self.Vehiculo" />
+          <AssociationSet Name="FK_MovimientoEstacionamiento_EspacioEstacionamiento" Association="Self.FK_MovimientoEstacionamiento_EspacioEstacionamiento">
+            <End Role="EspacioEstacionamiento" EntitySet="EspacioEstacionamiento" />
+            <End Role="MovimientoEstacionamiento" EntitySet="MovimientoEstacionamiento" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MovimientoEstacionamiento_Vehiculo" Association="Self.FK_MovimientoEstacionamiento_Vehiculo">
+            <End Role="Vehiculo" EntitySet="Vehiculo" />
+            <End Role="MovimientoEstacionamiento" EntitySet="MovimientoEstacionamiento" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ParqueoCentralWebModelStoreContainer" CdmEntityContainer="ParqueoCentralDBEntities">
+          <EntitySetMapping Name="C__RefactorLog">
+            <EntityTypeMapping TypeName="ParqueoCentralWebModel.C__RefactorLog">
+              <MappingFragment StoreEntitySet="__RefactorLog">
+                <ScalarProperty Name="OperationKey" ColumnName="OperationKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EspacioEstacionamiento">
+            <EntityTypeMapping TypeName="ParqueoCentralWebModel.EspacioEstacionamiento">
+              <MappingFragment StoreEntitySet="EspacioEstacionamiento">
+                <ScalarProperty Name="IdEspacio" ColumnName="IdEspacio" />
+                <ScalarProperty Name="CodigoEspacio" ColumnName="CodigoEspacio" />
+                <ScalarProperty Name="TipoEspacio" ColumnName="TipoEspacio" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MovimientoEstacionamiento">
+            <EntityTypeMapping TypeName="ParqueoCentralWebModel.MovimientoEstacionamiento">
+              <MappingFragment StoreEntitySet="MovimientoEstacionamiento">
+                <ScalarProperty Name="IdMovimiento" ColumnName="IdMovimiento" />
+                <ScalarProperty Name="IdVehiculo" ColumnName="IdVehiculo" />
+                <ScalarProperty Name="IdEspacio" ColumnName="IdEspacio" />
+                <ScalarProperty Name="FechaHoraEntrada" ColumnName="FechaHoraEntrada" />
+                <ScalarProperty Name="FechaHoraSalida" ColumnName="FechaHoraSalida" />
+                <ScalarProperty Name="EstadoMovimiento" ColumnName="EstadoMovimiento" />
+                <ScalarProperty Name="MontoCobrado" ColumnName="MontoCobrado" />
+                <ScalarProperty Name="UsuarioRegistro" ColumnName="UsuarioRegistro" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vehiculo">
+            <EntityTypeMapping TypeName="ParqueoCentralWebModel.Vehiculo">
+              <MappingFragment StoreEntitySet="Vehiculo">
+                <ScalarProperty Name="IdVehiculo" ColumnName="IdVehiculo" />
+                <ScalarProperty Name="Placa" ColumnName="Placa" />
+                <ScalarProperty Name="TipoVehiculo" ColumnName="TipoVehiculo" />
+                <ScalarProperty Name="Propietario" ColumnName="Propietario" />
+                <ScalarProperty Name="Contacto" ColumnName="Contacto" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,3 +1,7 @@
 <Solution>
   <Project Path="ParqueoCentralWeb.csproj" />
+  <Project Path="ParqueoCentralWebDB/ParqueoCentralWebDB.sqlproj">
+    <Build />
+    <Deploy />
+  </Project>
 </Solution>
