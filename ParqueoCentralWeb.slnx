@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="ParqueoCentralWeb.csproj" />
-  <Project Path="ParqueoCentralWebDB/ParqueoCentralWebDB.sqlproj">
+  <Project Path="ParqueoCentralWeb.csproj" Id="39adadb1-38af-4e78-b87f-743f42e2e659" />
+  <Project Path="ParqueoCentralWebDB/ParqueoCentralWebDB.sqlproj" Id="5e217b1a-e5c7-4f8e-a9b6-2acfd5b0815e">
     <Build />
     <Deploy />
   </Project>

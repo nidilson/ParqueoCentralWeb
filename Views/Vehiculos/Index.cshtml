@@ -1,0 +1,17 @@
+﻿@using ParqueoCentralWeb.Models
+@model List<VehiculoModel>
+@{
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<main>
+    Lista de vehiculos
+    <ul>
+        @foreach (VehiculoModel v in Model)
+        {
+            <li>@v.Placa</li>
+        }
+
+    </ul>
+    
+</main>

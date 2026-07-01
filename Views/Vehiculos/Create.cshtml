@@ -1,0 +1,80 @@
+﻿@using ParqueoCentralWeb.Models
+@model VehiculoModel
+@{
+    Layout = "../Shared/_Layout.cshtml";
+    ViewBag.Title = "Registrar Vehículo";
+}
+
+<h2>Registrar Vehículo</h2>
+
+@using (Html.BeginForm("Create", "Vehiculos", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="card">
+        <div class="card-body">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Placa, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Placa, new
+                {
+                    @class = "form-control",
+                    maxlength = "8",
+                    placeholder = "Ej: ABC123"
+                })
+                @Html.ValidationMessageFor(m => m.Placa, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TipoVehiculo, new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.TipoVehiculo,
+                    new SelectList(new[]
+                    {
+                        "Automóvil",
+                        "Motocicleta",
+                        "Buseta",
+                        "Otro"
+                    }),
+                    "-- Seleccione un tipo --",
+                    new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.TipoVehiculo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Propietario, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Propietario, new
+                {
+                    @class = "form-control",
+                    maxlength = "50"
+                })
+                @Html.ValidationMessageFor(m => m.Propietario, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Contacto, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Contacto, new
+                {
+                    @class = "form-control",
+                    maxlength = "50",
+                    placeholder = "8888-8888"
+                })
+                @Html.ValidationMessageFor(m => m.Contacto, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+            </div>
+
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}
