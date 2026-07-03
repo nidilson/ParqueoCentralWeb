@@ -1,0 +1,17 @@
+﻿@using ParqueoCentralWeb.Models
+@model List<EspacioModel>
+@{
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<main>
+    Lista de vehiculos
+    <ul>
+        @foreach (EspacioModel e in Model)
+        {
+            <li>@e.CodigoEspacio</li>
+        }
+
+    </ul>
+
+</main>

@@ -18,3 +18,14 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.card-dashboard {
+    min-height: 220px;
+    border-radius: 12px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+}

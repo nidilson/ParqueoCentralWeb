@@ -129,7 +129,9 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\EspaciosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OperadorController.cs" />
     <Compile Include="Controllers\VehiculosController.cs" />
     <Compile Include="C__RefactorLog.cs">
       <DependentUpon>ParqueoCentralWebDB.tt</DependentUpon>
@@ -140,6 +142,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\EspacioModel.cs" />
     <Compile Include="Models\VehiculoModel.cs" />
     <Compile Include="MovimientoEstacionamiento.cs">
       <DependentUpon>ParqueoCentralWebDB.tt</DependentUpon>
@@ -236,6 +239,10 @@
     <Content Include="Views\Vehiculos\Create.cshtml" />
     <Content Include="Views\Vehiculos\Edit.cshtml" />
     <Content Include="Views\Vehiculos\Details.cshtml" />
+    <Content Include="Views\Espacios\Index.cshtml" />
+    <Content Include="Views\Espacios\Edit.cshtml" />
+    <Content Include="Views\Espacios\Create.cshtml" />
+    <Content Include="Views\Espacios\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -10,6 +10,11 @@ namespace ParqueoCentralWeb.Controllers
 	{
 		public ActionResult Index()
 		{
+			ViewBag.Operador = "Nidilson";
+			ViewBag.EspaciosDisponibles = 42;
+			ViewBag.EspaciosOcupados = 42;
+			ViewBag.Vehiculos = 42;
+			ViewBag.Movimientos = 42;
 			return View();
 			
 		}

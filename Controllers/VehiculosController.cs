@@ -8,13 +8,11 @@ using System.Web.Mvc;
 
 namespace ParqueoCentralWeb.Controllers
 {
-	[Route("/Vehiculos")]
 	public class VehiculosController: Controller
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
 
 		[HttpGet]
-		[Route("/")]
 		public ActionResult Index()
 		{
 			var vehiculos = _database.Vehiculo.Select(v => new VehiculoModel
@@ -76,7 +74,10 @@ namespace ParqueoCentralWeb.Controllers
 				Propietario = v.Propietario,
 				Contacto = v.Contacto
 			}).FirstOrDefault();
-
+			if(vehiculo == null)
+			{
+				return RedirectToAction("Index");
+			}
 			return View(vehiculo);
 		}
 
@@ -123,8 +124,33 @@ namespace ParqueoCentralWeb.Controllers
 				Propietario = v.Propietario,
 				Contacto = v.Contacto
 			}).FirstOrDefault();
-
+			if (vehiculo == null)
+			{
+				return RedirectToAction("Index");
+			}
 			return View(vehiculo);
+		}
+
+		[HttpGet]
+		public ActionResult Delete(int id)
+		{
+			Vehiculo vehiculoBorrar = _database.Vehiculo.Find(id);
+			try
+			{
+				_database.Vehiculo.Remove(vehiculoBorrar);
+				_database.SaveChanges();
+			}
+			catch (Exception ex)
+			{
+				TempData["Message"] = "Hubo un error al borrar el vehículo";
+				TempData["MessageType"] = "danger";
+				return RedirectToAction("Index");
+			}
+
+			TempData["Message"] = "Se ha eliminado correctamente el vehículo";
+			TempData["MessageType"] = "success";
+
+			return RedirectToAction("Index");
 		}
 
 		[HttpGet]

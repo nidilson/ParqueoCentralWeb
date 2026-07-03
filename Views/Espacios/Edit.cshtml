@@ -1,0 +1,85 @@
+﻿@model ParqueoCentralWeb.Models.EspacioModel
+
+@{
+    Layout = "../Shared/_Layout.cshtml";
+    ViewBag.Title = "Editar Espacio";
+}
+
+<h2>Editar Vehículo</h2>
+
+@using (Html.BeginForm("Edit", "Espacios", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.IdEspacio)
+
+    <div class="card">
+        <div class="card-body">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.CodigoEspacio, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.CodigoEspacio, new
+                {
+                    @class = "form-control",
+                    maxlength = "8"
+                })
+                @Html.ValidationMessageFor(m => m.CodigoEspacio, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TipoEspacio, new { @class = "form-label" })
+                @Html.DropDownListFor(
+                    m => m.TipoEspacio,
+                    new SelectList(new[]
+                    {
+                        "Automóvil",
+                        "Motocicleta",
+                        "Preferencial",
+                        "Otro"
+                    }, Model.TipoEspacio),
+                    "-- Seleccione un tipo --",
+                    new { @class = "form-select" }
+                )
+                @Html.ValidationMessageFor(m => m.TipoEspacio, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Estado, new { @class = "form-label" })
+                @Html.DropDownListFor(
+                    m => m.Estado,
+                    new SelectList(new[]
+                    {
+                        "Disponible",
+                        "Ocupado",
+                        "Reservado",
+                        "Mantenimiento"
+                    }, Model.Estado),
+                    "-- Seleccione un tipo --",
+                    new { @class = "form-select" }
+                )
+                @Html.ValidationMessageFor(m => m.Estado, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3 form-check">
+                @Html.CheckBoxFor(m => m.Activo, new { @class = "form-check-input" })
+                @Html.LabelFor(m => m.Activo, new { @class = "form-check-label" })
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Guardar Cambios
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+            </div>
+
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+}
