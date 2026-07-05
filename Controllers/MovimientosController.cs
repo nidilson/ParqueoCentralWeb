@@ -24,9 +24,6 @@ namespace ParqueoCentralWeb.Controllers
 		[HttpPost]
 		public ActionResult Entrada(MovimientoEstacionamientoModel movimiento)
 		{
-			/*5. El sistema debe cambiar el estado del espacio a ocupado.
-				6. El sistema debe evitar que un vehículo tenga dos entradas activas al mismo tiempo.
-				7. El sistema debe mostrar un mensaje de confirmación al registrar la entrada.*/
 			Vehiculo vehiculo = ObtenerVehiculoPorId(movimiento.IdVehiculo);
 
 			if (VerificarVehiculo(vehiculo) != 0)
