@@ -1,0 +1,158 @@
+﻿using ParqueoCentralWeb.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace ParqueoCentralWeb.Controllers
+{
+	public class MovimientosController: Controller
+	{
+		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
+
+		[HttpGet]
+		public ActionResult Entrada()
+		{
+			ViewBag.Espacios = new SelectList(_database.EspacioEstacionamiento.Where(e => e.Estado.Equals("Disponible")).ToList(), "IdEspacio", "CodigoEspacio");
+			MovimientoEstacionamientoModel movimiento = new MovimientoEstacionamientoModel();
+			movimiento.FechaHoraEntrada = DateTime.Now;
+			movimiento.EstadoMovimiento = "En uso";
+			return View(movimiento);
+		}
+		[HttpPost]
+		public ActionResult Entrada(MovimientoEstacionamientoModel movimiento)
+		{
+			/*5. El sistema debe cambiar el estado del espacio a ocupado.
+				6. El sistema debe evitar que un vehículo tenga dos entradas activas al mismo tiempo.
+				7. El sistema debe mostrar un mensaje de confirmación al registrar la entrada.*/
+			Vehiculo vehiculo = ObtenerVehiculoPorId(movimiento.IdVehiculo);
+
+			if (VerificarVehiculo(vehiculo) != 0)
+			{
+				ModelState.AddModelError("IdVehiculo", "Debe ingresar una placa válida");
+			}
+			if (!ModelState.IsValid) {
+				ViewBag.Espacios = new SelectList(
+					_database.EspacioEstacionamiento
+						.Where(e => e.Estado == "Disponible")
+						.ToList(),
+					"IdEspacio",
+					"CodigoEspacio");
+				return View(movimiento);
+			}
+			MovimientoEstacionamiento movimientoNuevo = new MovimientoEstacionamiento
+			{
+				IdEspacio = movimiento.IdEspacio,
+				IdVehiculo = movimiento.IdVehiculo,
+				FechaHoraEntrada = movimiento.FechaHoraEntrada,
+				EstadoMovimiento = "En uso",
+				UsuarioRegistro = movimiento.UsuarioRegistro
+			};
+
+			using(var transaction = _database.Database.BeginTransaction()) {
+				try
+				{
+					_database.MovimientoEstacionamiento.Add(movimientoNuevo);
+					EspacioEstacionamiento espacio = _database.EspacioEstacionamiento.Find(movimientoNuevo.IdEspacio);
+					espacio.Estado = "Ocupado";
+					_database.SaveChanges();
+					transaction.Commit();
+				
+				}
+				catch (Exception)
+				{
+					transaction.Rollback();
+					Response.StatusCode = 500;
+					TempData["Message"] = "Hubo un error al registrar la entrada";
+					TempData["MessageType"] = "danger";
+					return View(movimiento);
+				}
+			}
+			TempData["Message"] = "Entrada registrada correctamente";
+			TempData["MessageType"] = "success";
+			return RedirectToAction("Index", "Home");
+		}
+
+		[HttpGet]
+		public ActionResult RevisarPlaca(string placa)
+		{
+			
+			Vehiculo vehiculo = ObtenerVehiculoPorPlaca(placa);
+
+			switch (VerificarVehiculo(vehiculo))
+			{
+				case 1:
+					return HttpNotFound();
+				case 2:
+					Response.StatusCode = 403;
+					return Json(new { message = "Este vehículo ya tiene una entrada registrada" }, JsonRequestBehavior.AllowGet);
+				case 3:
+					Response.StatusCode = 403;
+					return Json(new { message = "Error en el servidor" }, JsonRequestBehavior.AllowGet);
+				default:
+					return Json(vehiculo, JsonRequestBehavior.AllowGet);
+			}
+		}
+
+		/// <summary>
+		/// Obtiene el vehículo con el numero de placa
+		/// </summary>
+		/// <param name="placa">numero de placa a buscar</param>
+		/// <returns>Vehículo obtenido, puede ser null</returns>
+		private Vehiculo ObtenerVehiculoPorPlaca(string placa)
+		{
+			try
+			{
+				Vehiculo vehiculo = _database.Vehiculo.Where(v => v.Placa.Equals(placa)).FirstOrDefault();
+				return vehiculo;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+
+		}
+		/// <summary>
+		/// Obtiene el vehículo con el Id
+		/// </summary>
+		/// <param name="id">Id a buscar</param>
+		/// <returns>Vehículo obtenido, puede ser null</returns>
+		private Vehiculo ObtenerVehiculoPorId(int id)
+		{
+			try
+			{
+				Vehiculo vehiculo = _database.Vehiculo.Where(v => v.IdVehiculo == id).FirstOrDefault();
+				return vehiculo;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+
+		}
+
+		/// <summary>
+		/// Determina si un vehículo es null o si ya tiene una entrada activa
+		/// </summary>
+		/// <param name="vehiculo">Vehículo a revisar</param>
+		/// <returns>Codigo con el resultado 0: Sin problemas 1: Null 2: Tiene entrada Activa 3: Error</returns>
+		private int VerificarVehiculo(Vehiculo vehiculo)
+		{
+			if (vehiculo == null)
+				return 1;
+			try
+			{
+				if (_database.MovimientoEstacionamiento.Any(e => e.IdVehiculo == vehiculo.IdVehiculo && e.EstadoMovimiento.Equals("En uso")))
+				return 2;
+			}
+			catch (Exception ex)
+			{
+				return 3;
+			}
+			
+			return 0;
+		}
+	}
+}

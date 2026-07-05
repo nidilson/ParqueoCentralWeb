@@ -131,6 +131,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\EspaciosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MovimientosController.cs" />
     <Compile Include="Controllers\OperadorController.cs" />
     <Compile Include="Controllers\VehiculosController.cs" />
     <Compile Include="C__RefactorLog.cs">
@@ -143,6 +144,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\EspacioModel.cs" />
+    <Compile Include="Models\MovimientoEstacionamientoModel.cs" />
     <Compile Include="Models\VehiculoModel.cs" />
     <Compile Include="MovimientoEstacionamiento.cs">
       <DependentUpon>ParqueoCentralWebDB.tt</DependentUpon>
@@ -184,6 +186,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\JS\Entrada.js" />
+    <Content Include="Content\JS\Home.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -243,6 +247,7 @@
     <Content Include="Views\Espacios\Edit.cshtml" />
     <Content Include="Views\Espacios\Create.cshtml" />
     <Content Include="Views\Espacios\Details.cshtml" />
+    <Content Include="Views\Movimientos\Entrada.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
