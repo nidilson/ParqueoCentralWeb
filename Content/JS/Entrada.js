@@ -1,6 +1,6 @@
 ﻿document.getElementById("btnBuscarPlaca").addEventListener("click", function () {
 
-    const placa = document.getElementById("txtPlaca").value;
+    const placa = document.getElementById("Placa").value;
 
     $.ajax({
         url: "/Movimientos/RevisarPlaca",
@@ -11,8 +11,8 @@
         dataType: "json",
         success: function (response) {
 
-            $("#Vehiculo_Propietario").val(response.Propietario);
-            $("#Vehiculo_TipoVehiculo").val(response.TipoVehiculo);
+            $("#Propietario").val(response.Propietario);
+            $("#TipoVehiculo").val(response.TipoVehiculo);
             $("#IdVehiculo").val(response.IdVehiculo);
             $("#VehiculoNoEncontradoDiv").addClass("visually-hidden")
             $("#VehiculoIngresadoDiv").addClass("visually-hidden")

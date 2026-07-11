@@ -1,4 +1,4 @@
-﻿using ParqueoCentralWeb.Models;
+﻿                      using ParqueoCentralWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -12,6 +12,7 @@ namespace ParqueoCentralWeb.Controllers
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
 
+		#region Entradas
 		[HttpGet]
 		public ActionResult Entrada()
 		{
@@ -26,7 +27,7 @@ namespace ParqueoCentralWeb.Controllers
 		{
 			Vehiculo vehiculo = ObtenerVehiculoPorId(movimiento.IdVehiculo);
 
-			if (VerificarVehiculo(vehiculo) != 0)
+			if (VerificarEntradasVehiculo(vehiculo) != 0)
 			{
 				ModelState.AddModelError("IdVehiculo", "Debe ingresar una placa válida");
 			}
@@ -78,7 +79,7 @@ namespace ParqueoCentralWeb.Controllers
 			
 			Vehiculo vehiculo = ObtenerVehiculoPorPlaca(placa);
 
-			switch (VerificarVehiculo(vehiculo))
+			switch (VerificarEntradasVehiculo(vehiculo))
 			{
 				case 1:
 					return HttpNotFound();
@@ -135,7 +136,7 @@ namespace ParqueoCentralWeb.Controllers
 		/// </summary>
 		/// <param name="vehiculo">Vehículo a revisar</param>
 		/// <returns>Codigo con el resultado 0: Sin problemas 1: Null 2: Tiene entrada Activa 3: Error</returns>
-		private int VerificarVehiculo(Vehiculo vehiculo)
+		private int VerificarEntradasVehiculo(Vehiculo vehiculo)
 		{
 			if (vehiculo == null)
 				return 1;
@@ -150,6 +151,103 @@ namespace ParqueoCentralWeb.Controllers
 			}
 			
 			return 0;
+		}
+		#endregion
+
+		[HttpGet]
+		public ActionResult Salida()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public ActionResult Salida(MovimientoEstacionamientoModel movimiento)
+		{
+			MovimientoEstacionamiento movimientoModificar;
+			EspacioEstacionamiento espacio;
+			using (var transaction = _database.Database.BeginTransaction())
+			{
+				try
+				{
+					movimientoModificar = _database.MovimientoEstacionamiento.Find(movimiento.IdMovimiento);
+					espacio = _database.EspacioEstacionamiento.Find(movimiento.IdEspacio);
+					
+					movimientoModificar.EstadoMovimiento = "Finalizado";
+					movimientoModificar.FechaHoraSalida = movimiento.FechaHoraSalida;
+					movimientoModificar.MontoCobrado = movimiento.MontoCobrado;
+
+					espacio.Estado = "Disponible";
+
+					_database.SaveChanges();
+
+					transaction.Commit();
+
+				}
+				catch (Exception ex)
+				{
+					transaction.Rollback();
+					TempData["Message"] = "Hubo un error al registrar la salida";
+					TempData["MessageType"] = "danger";
+					return View();
+				}
+			}
+
+			TempData["Message"] = "Salida registrada correctamente";
+			TempData["MessageType"] = "success";
+			return RedirectToAction("Index", "Home");
+		}
+
+		[HttpGet]
+		public ActionResult ObtenerMovimiento(string placa)
+		{
+			MovimientoEstacionamientoModel movimiento = new MovimientoEstacionamientoModel();
+			try
+			{
+				var consulta = from m in _database.MovimientoEstacionamiento
+							   join v in _database.Vehiculo on m.IdVehiculo equals v.IdVehiculo
+							   join e in _database.EspacioEstacionamiento on m.IdEspacio equals e.IdEspacio
+							   where v.Placa == placa && m.EstadoMovimiento == "En uso"
+							   select new MovimientoEstacionamientoModel
+							   {
+								   IdMovimiento = m.IdMovimiento,
+								   IdVehiculo = m.IdVehiculo,
+								   IdEspacio = m.IdEspacio,
+								   Propietario = v.Propietario,
+								   TipoVehiculo = v.TipoVehiculo,
+								   Placa = v.Placa,
+								   CodigoEspacio = e.CodigoEspacio,
+								   FechaHoraEntrada = m.FechaHoraEntrada,
+								   EstadoMovimiento = m.EstadoMovimiento,
+								   UsuarioRegistro = m.UsuarioRegistro
+							   };
+
+				movimiento = consulta.ToList().FirstOrDefault();
+
+			}catch(Exception ex)
+			{
+				return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError);
+			}
+
+			if (movimiento == null)
+				return HttpNotFound();
+
+			movimiento.FechaHoraSalida = DateTime.Now;
+			movimiento.TiempoParqueado = ObtenerTiempoParqueado(movimiento.FechaHoraEntrada, movimiento.FechaHoraSalida);
+			movimiento.MontoCobrado = (decimal) movimiento.TiempoParqueado * 500;
+
+			return Json(movimiento, JsonRequestBehavior.AllowGet);
+		}
+
+		public double ObtenerTiempoParqueado(DateTime horaEntrada, DateTime? horaSalida)
+		{
+			if (horaSalida == null)
+				horaSalida = DateTime.Now;
+
+			TimeSpan time = horaSalida.Value - horaEntrada;
+
+			double horas = Math.Round(time.TotalHours, 1);
+
+			return horas;
 		}
 	}
 }

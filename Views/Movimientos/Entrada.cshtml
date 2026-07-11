@@ -31,10 +31,12 @@
                     </label>
 
                     <div class="input-group">
-                        <input type="text"
-                               id="txtPlaca"
-                               class="form-control"
-                               placeholder="Ingrese la placa..." />
+                        @Html.TextBoxFor(m => m.Placa,
+                            new
+                            {
+                                @class = "form-control",
+                                placeholder = "Ingrese la placa"
+                            })
 
                         <button class="btn btn-outline-secondary"
                                 type="button"
@@ -44,6 +46,7 @@
                     </div>
 
                     @Html.ValidationMessageFor(m => m.IdVehiculo, "", new { @class = "text-danger" })
+
                     <div id="VehiculoNoEncontradoDiv" class="col-md-6 mb-3 visually-hidden">
                         @Html.Label("No se encuentra el vehículo ¿desea agregarlo?", new { @class = "form-label text-danger" })
 
@@ -59,19 +62,27 @@
                 <div class="col-md-6 mb-3">
                     @Html.Label("Propietario", new { @class = "form-label" })
 
-                    <input type="text"
-                           id="Vehiculo_Propietario"
-                           class="form-control"
-                           disabled />
+                    @Html.TextBoxFor(
+                        m => m.Propietario,
+                        new
+                        {
+                            @class = "form-control",
+                            maxlength = "50",
+                            @readonly = "Readonly"
+                        })
 
                 </div>
                 <div class="col-md-6 mb-3">
                     @Html.Label("Tipo de Vehiculo", new { @class = "form-label" })
 
-                    <input type="text"
-                           id="Vehiculo_TipoVehiculo"
-                           class="form-control"
-                           disabled />
+                    @Html.TextBoxFor(
+                        m => m.TipoVehiculo,
+                        new
+                        {
+                            @class = "form-control",
+                            maxlength = "50",
+                            @readonly = "Readonly"
+                        })                                       
 
                 </div>              
 

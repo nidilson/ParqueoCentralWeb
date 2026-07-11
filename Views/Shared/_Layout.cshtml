@@ -48,7 +48,7 @@
                 <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Entrada","Movimientos")">
                     <i class="bi bi-arrow-bar-left me-2"></i> Entradas
                 </a>
-                <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Index","Movimientos")">
+                <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Salida","Movimientos")">
                     <i class="bi bi-arrow-bar-right me-2"></i> Salidas
                 </a>
                 <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Index","Movimientos")">
@@ -83,7 +83,7 @@
                         <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Entrada","Movimientos")">
                             <i class="bi bi-arrow-bar-left me-2"></i> Entradas
                         </a>
-                        <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Index","Movimientos")">
+                        <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Salida","Movimientos")">
                             <i class="bi bi-arrow-bar-right me-2"></i> Salidas
                         </a>
                         <a class="nav-link px-3 py-3 text-dark fw-bold" href="@Url.Action("Index","Movimientos")">
@@ -110,6 +110,7 @@
             </div>
 
         </div>
+        @Html.Partial("_Toast")
 
         @Scripts.Render("~/bundles/jquery")
         @Scripts.Render("~/bundles/bootstrap")
