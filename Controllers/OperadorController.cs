@@ -8,19 +8,17 @@ namespace ParqueoCentralWeb.Controllers
 {
 	public class OperadorController: Controller
 	{
+		[HttpGet]
 		public ActionResult LogIn()
 		{
+			Session.Clear();
 			return View();
 		}
+		[HttpPost]
 		public ActionResult LogIn(string nombre)
 		{
 			Session["operador"] = nombre;
-			return View();
-		}
-		public ActionResult LogOut(string nombre)
-		{
-			Session["operador"] = "";
-			return View();
+			return RedirectToAction("Index", "Home");
 		}
 	}
 }

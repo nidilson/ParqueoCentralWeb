@@ -60,7 +60,6 @@ namespace ParqueoCentralWeb.Models
 		[Display(Name = "Tiempo Parqueado")]
 		public double? TiempoParqueado { get; set; }
 
-		[Required(ErrorMessage = "El usuario que registra el movimiento es obligatorio.")]
 		[StringLength(50)]
 		[Display(Name = "Usuario que Registró")] 
 		public string UsuarioRegistro { get; set; }

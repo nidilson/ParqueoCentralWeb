@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Iniciar Sesión";
+}
+
+<div class="container mh-100 flex-fill d-flex justify-content-center align-items-center">
+
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Sistema de Parqueo</h3>
+            </div>
+
+            <div class="card-body p-4">
+
+                <h5 class="text-center mb-4">
+                    Iniciar Sesión
+                </h5>
+
+                @using (Html.BeginForm("Login", "Operador", FormMethod.Post))
+                {
+                    <div class="mb-3">
+
+                        <label for="nombre" class="form-label">
+                            Nombre de usuario
+                            <span class="text-secondary fs-6">Ingrese el nombre del operador que utilizará el sistema. Este nombre quedará registrado en cada movimiento de entrada y salida.</span>
+                        </label>
+
+                        <input type="text"
+                               id="nombre"
+                               name="nombre"
+                               class="form-control"
+                               placeholder="Ingrese su nombre"
+                               required
+                               maxlength="50"
+                               autofocus />
+
+                    </div>
+
+                    <div class="d-grid">
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Ingresar
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,4 +1,6 @@
-﻿using ParqueoCentralWeb.Models;
+﻿using ParqueoCentralWeb.Filtro;
+using ParqueoCentralWeb.Helpers;
+using ParqueoCentralWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -8,6 +10,7 @@ using System.Web.Mvc;
 
 namespace ParqueoCentralWeb.Controllers
 {
+	[OperadorAuthorize]
 	public class VehiculosController: Controller
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
@@ -135,6 +138,13 @@ namespace ParqueoCentralWeb.Controllers
 		public ActionResult Delete(int id)
 		{
 			Vehiculo vehiculoBorrar = _database.Vehiculo.Find(id);
+			if(_database.MovimientoEstacionamiento.Count(m => m.IdVehiculo == vehiculoBorrar.IdVehiculo) > 0)
+			{
+				TempData["Message"] = "No se puede eliminar un vehículo con un movimiento asociado";
+				TempData["MessageType"] = "danger";
+				return RedirectToAction("Index");
+			}
+
 			try
 			{
 				_database.Vehiculo.Remove(vehiculoBorrar);
@@ -161,6 +171,38 @@ namespace ParqueoCentralWeb.Controllers
 				v.IdVehiculo != idVehiculo);
 
 			return Json(!existe, JsonRequestBehavior.AllowGet);
+		}
+
+		[HttpPost]
+		public JsonResult ObtenerVehiculos()
+		{
+			var request = DataTableRequest.FromRequest(Request);
+
+			IQueryable<Vehiculo> consulta =
+				_database.Vehiculo.AsNoTracking();
+
+			if (!string.IsNullOrWhiteSpace(request.Search))
+			{
+				consulta = consulta.Where(v =>
+					v.Placa.Contains(request.Search) ||
+					v.Propietario.Contains(request.Search) ||
+					v.Contacto.Contains(request.Search));
+			}
+
+			var resultado = DataTableService.Create(
+
+				consulta.Select(v => new
+				{
+					v.IdVehiculo,
+					v.Placa,
+					v.TipoVehiculo,
+					v.Propietario,
+					v.Contacto
+				}),
+				request,
+				defaultOrderColumn: "IdVehiculo");
+
+			return Json(resultado);
 		}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿
-@model List<ParqueoCentralWeb.Models.MovimientoEstacionamientoModel>
 @{
     ViewBag.Title = "Inicio";
 }
@@ -56,35 +55,16 @@
                 <h2>Últimos vehículos ingresados</h2>
             </div>
             <div class="card-body">
-                <table id="tblParqueos" class="table table-striped table-hover align-middle">
-                    <thead class="table-dark"> 
-                        <tr> 
-                            <th>Placa</th> 
-                            <th>Tipo de Vehículo</th> 
-                            <th>Hora</th> 
-                            <th>Estado</th> 
-                        </tr> 
-                    </thead> 
-                    <tbody> 
-                        @if (Model != null)
-                        {
-                            foreach (var item in Model)
-                            {
-                                <tr> 
-                                    <td>@item.IdVehiculo</td> 
-                                    <td>@item.IdEspacio</td> 
-                                    <td>@item.FechaHoraEntrada.TimeOfDay.ToString("HH:mm")</td> 
-                                    <td> @if (item.EstadoMovimiento == "En uso")
-                                            {<span class="badge bg-success"> En uso </span> }
-                                        else
-                                        { <span class="badge bg-secondary"> Salió </span>} 
-                                    </td>
-                                </tr>
-                            } 
-
-                        }
-                    </tbody> 
-                </table> 
+                <table id="tblParqueos" class="table table-striped table-hover align-middle w-100">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Placa</th>
+                            <th>Espacio</th>
+                            <th>Hora de Entrada</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                </table>
 
         </div>
     </div>

@@ -1,4 +1,6 @@
-﻿using ParqueoCentralWeb.Models;
+﻿using ParqueoCentralWeb.Filtro;
+using ParqueoCentralWeb.Helpers;
+using ParqueoCentralWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,7 @@ using System.Web.Mvc;
 
 namespace ParqueoCentralWeb.Controllers
 {
+	[OperadorAuthorize]
 	public class EspaciosController: Controller
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
@@ -160,6 +163,38 @@ namespace ParqueoCentralWeb.Controllers
 				e.IdEspacio != idEspacio);
 
 			return Json(!existe, JsonRequestBehavior.AllowGet);
+		}
+
+		[HttpPost]
+		public JsonResult ObtenerEspacios()
+		{
+			var request = DataTableRequest.FromRequest(Request);
+
+			IQueryable<EspacioEstacionamiento> consulta =
+				_database.EspacioEstacionamiento.AsNoTracking();
+
+			if (!string.IsNullOrWhiteSpace(request.Search))
+			{
+				consulta = consulta.Where(e =>
+					e.CodigoEspacio.Contains(request.Search) ||
+					e.TipoEspacio.Contains(request.Search) ||
+					e.Estado.Contains(request.Search));
+			}
+
+			var resultado = DataTableService.Create(
+
+				consulta.Select(e => new
+				{
+					e.IdEspacio,
+					e.CodigoEspacio,
+					e.TipoEspacio,
+					e.Estado,
+					e.Activo
+				}),
+				request,
+				defaultOrderColumn: "IdEspacio");
+
+			return Json(resultado);
 		}
 	}
 }

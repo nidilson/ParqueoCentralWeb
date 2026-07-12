@@ -118,20 +118,6 @@
 
             </div>
 
-            <div class="mb-3">
-                @Html.LabelFor(m => m.UsuarioRegistro, new { @class = "form-label" })
-
-                @Html.TextBoxFor(
-                    m => m.UsuarioRegistro,
-                    new
-                    {
-                        @class = "form-control",
-                        maxlength = "50"
-                    })
-
-                @Html.ValidationMessageFor(m => m.UsuarioRegistro, "", new { @class = "text-danger" })
-            </div>
-
         </div>
 
         <div class="card-footer text-end">

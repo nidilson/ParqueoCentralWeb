@@ -1,0 +1,175 @@
+﻿@model ParqueoCentralWeb.Models.MovimientoEstacionamientoModel
+
+@{
+    ViewBag.Title = "Detalle del Movimiento";
+
+    int horas = 0;
+    int minutos = 0;
+
+    if (Model.TiempoParqueado.HasValue)
+    {
+        horas = (int)Math.Floor(Model.TiempoParqueado.Value);
+        minutos = (int)Math.Round((Model.TiempoParqueado.Value - horas) * 60);
+
+        if (minutos == 60)
+        {
+            horas++;
+            minutos = 0;
+        }
+    }
+}
+
+<div class="container">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-10">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        Detalle del Movimiento
+                    </h4>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <dl class="row">
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.Placa)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Html.DisplayFor(m => m.Placa)
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.TipoVehiculo)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Html.DisplayFor(m => m.TipoVehiculo)
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.Propietario)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Html.DisplayFor(m => m.Propietario)
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.CodigoEspacio)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Html.DisplayFor(m => m.CodigoEspacio)
+                                </dd>
+
+                            </dl>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <dl class="row">
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.FechaHoraEntrada)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Model.FechaHoraEntrada.ToString("dd/MM/yyyy HH:mm")
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.FechaHoraSalida)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @(Model.FechaHoraSalida.HasValue
+                                        ? Model.FechaHoraSalida.Value.ToString("dd/MM/yyyy HH:mm")
+                                        : "-")
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.TiempoParqueado)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @(Model.TiempoParqueado.HasValue
+                                        ? $"{horas}h {minutos}m"
+                                        : "-")
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.MontoCobrado)
+                                </dt>
+
+                                <dd class="col-7 fw-bold">
+                                    @(Model.MontoCobrado.HasValue
+                                        ? String.Format("₡ {0:N2}", Model.MontoCobrado)
+                                        : "-")
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.EstadoMovimiento)
+                                </dt>
+
+                                <dd class="col-7">
+
+                                    @if (Model.EstadoMovimiento == "En uso")
+                                    {
+                                        <span class="badge bg-success">
+                                            En uso
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Finalizado
+                                        </span>
+                                    }
+
+                                </dd>
+
+                                <dt class="col-5">
+                                    @Html.DisplayNameFor(m => m.UsuarioRegistro)
+                                </dt>
+
+                                <dd class="col-7">
+                                    @Html.DisplayFor(m => m.UsuarioRegistro)
+                                </dd>
+
+                            </dl>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="card-footer text-end">
+
+                    @Html.ActionLink(
+                             "Volver",
+                             "Index",
+                             null,
+                             new { @class = "btn btn-secondary" })
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

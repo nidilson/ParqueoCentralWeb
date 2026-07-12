@@ -5,12 +5,93 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ParqueoCentralWeb.Helpers;
+using ParqueoCentralWeb.Filtro;
 
 namespace ParqueoCentralWeb.Controllers
 {
+	[OperadorAuthorize]
 	public class MovimientosController: Controller
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
+
+		[HttpGet]
+		public ActionResult Index()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public JsonResult ObtenerMovimientos()
+		{
+			var request = DataTableRequest.FromRequest(Request);
+
+			var consulta =
+				from m in _database.MovimientoEstacionamiento.AsNoTracking()
+				join v in _database.Vehiculo on m.IdVehiculo equals v.IdVehiculo
+				join e in _database.EspacioEstacionamiento on m.IdEspacio equals e.IdEspacio
+				select new
+				{
+					m.IdMovimiento,
+
+					Placa = v.Placa,
+
+					CodigoEspacio = e.CodigoEspacio,
+
+					FechaHoraEntrada = m.FechaHoraEntrada,
+
+					FechaHoraSalida = m.FechaHoraSalida,
+
+					MontoCobrado = m.MontoCobrado,
+
+					EstadoMovimiento = m.EstadoMovimiento,
+
+					UsuarioRegistro = m.UsuarioRegistro
+				};
+
+			if (!string.IsNullOrWhiteSpace(request.Search))
+			{
+				consulta = consulta.Where(x =>
+					x.Placa.Contains(request.Search) ||
+					x.CodigoEspacio.Contains(request.Search) ||
+					x.EstadoMovimiento.Contains(request.Search) ||
+					x.UsuarioRegistro.Contains(request.Search));
+			}
+
+			var resultado = DataTableService.Create(
+				consulta,
+				request,
+				defaultOrderColumn: "FechaHoraEntrada",
+				defaultOrderDirection: "desc");
+
+			return Json(resultado);
+		}
+
+		public ActionResult Details(int id)
+		{
+			MovimientoEstacionamientoModel mov = (from m in _database.MovimientoEstacionamiento
+												  join v in _database.Vehiculo on m.IdVehiculo equals v.IdVehiculo
+												  join e in _database.EspacioEstacionamiento on m.IdEspacio equals e.IdEspacio
+												  where m.IdMovimiento == id
+												  select new MovimientoEstacionamientoModel
+												  {
+													  IdMovimiento = m.IdMovimiento,
+													  IdVehiculo = v.IdVehiculo,
+													  IdEspacio = e.IdEspacio,
+													  Placa = v.Placa,
+													  TipoVehiculo = v.TipoVehiculo,
+													  Propietario = v.Propietario,
+													  CodigoEspacio = e.CodigoEspacio,
+													  FechaHoraEntrada = m.FechaHoraEntrada,
+													  FechaHoraSalida = m.FechaHoraSalida,
+													  EstadoMovimiento = m.EstadoMovimiento,
+													  MontoCobrado = m.MontoCobrado,
+													  UsuarioRegistro = m.UsuarioRegistro
+												  }).FirstOrDefault();
+
+			mov.TiempoParqueado = ObtenerTiempoParqueado(mov.FechaHoraEntrada, mov.FechaHoraSalida);
+			return View(mov);
+		}
 
 		#region Entradas
 		[HttpGet]
@@ -22,10 +103,11 @@ namespace ParqueoCentralWeb.Controllers
 			movimiento.EstadoMovimiento = "En uso";
 			return View(movimiento);
 		}
+
 		[HttpPost]
 		public ActionResult Entrada(MovimientoEstacionamientoModel movimiento)
 		{
-			Vehiculo vehiculo = ObtenerVehiculoPorId(movimiento.IdVehiculo);
+			VehiculoModel vehiculo = ObtenerVehiculoPorId(movimiento.IdVehiculo);
 
 			if (VerificarEntradasVehiculo(vehiculo) != 0)
 			{
@@ -46,7 +128,7 @@ namespace ParqueoCentralWeb.Controllers
 				IdVehiculo = movimiento.IdVehiculo,
 				FechaHoraEntrada = movimiento.FechaHoraEntrada,
 				EstadoMovimiento = "En uso",
-				UsuarioRegistro = movimiento.UsuarioRegistro
+				UsuarioRegistro = Session["Operador"].ToString()
 			};
 
 			using(var transaction = _database.Database.BeginTransaction()) {
@@ -77,7 +159,7 @@ namespace ParqueoCentralWeb.Controllers
 		public ActionResult RevisarPlaca(string placa)
 		{
 			
-			Vehiculo vehiculo = ObtenerVehiculoPorPlaca(placa);
+			VehiculoModel vehiculo = ObtenerVehiculoPorPlaca(placa);
 
 			switch (VerificarEntradasVehiculo(vehiculo))
 			{
@@ -99,11 +181,17 @@ namespace ParqueoCentralWeb.Controllers
 		/// </summary>
 		/// <param name="placa">numero de placa a buscar</param>
 		/// <returns>Vehículo obtenido, puede ser null</returns>
-		private Vehiculo ObtenerVehiculoPorPlaca(string placa)
+		private VehiculoModel ObtenerVehiculoPorPlaca(string placa)
 		{
 			try
 			{
-				Vehiculo vehiculo = _database.Vehiculo.Where(v => v.Placa.Equals(placa)).FirstOrDefault();
+				VehiculoModel vehiculo = _database.Vehiculo.Where(v => v.Placa.Equals(placa)).Select(v =>
+				new VehiculoModel{
+					IdVehiculo = v.IdVehiculo,
+					Placa = v.Placa,
+					Propietario = v.Propietario,
+					TipoVehiculo = v.TipoVehiculo
+				}).FirstOrDefault();
 				return vehiculo;
 			}
 			catch (Exception ex)
@@ -117,11 +205,18 @@ namespace ParqueoCentralWeb.Controllers
 		/// </summary>
 		/// <param name="id">Id a buscar</param>
 		/// <returns>Vehículo obtenido, puede ser null</returns>
-		private Vehiculo ObtenerVehiculoPorId(int id)
+		private VehiculoModel ObtenerVehiculoPorId(int id)
 		{
 			try
 			{
-				Vehiculo vehiculo = _database.Vehiculo.Where(v => v.IdVehiculo == id).FirstOrDefault();
+				VehiculoModel vehiculo = _database.Vehiculo.Where(v => v.IdVehiculo == id).Select(v =>
+				new VehiculoModel
+				{
+					IdVehiculo = v.IdVehiculo,
+					Placa = v.Placa,
+					Propietario = v.Propietario,
+					TipoVehiculo = v.TipoVehiculo
+				}).FirstOrDefault();
 				return vehiculo;
 			}
 			catch (Exception ex)
@@ -136,7 +231,7 @@ namespace ParqueoCentralWeb.Controllers
 		/// </summary>
 		/// <param name="vehiculo">Vehículo a revisar</param>
 		/// <returns>Codigo con el resultado 0: Sin problemas 1: Null 2: Tiene entrada Activa 3: Error</returns>
-		private int VerificarEntradasVehiculo(Vehiculo vehiculo)
+		private int VerificarEntradasVehiculo(VehiculoModel vehiculo)
 		{
 			if (vehiculo == null)
 				return 1;
@@ -154,9 +249,21 @@ namespace ParqueoCentralWeb.Controllers
 		}
 		#endregion
 
+		#region Salidas
+
 		[HttpGet]
-		public ActionResult Salida()
+		public ActionResult Salida(int? id)
 		{
+			
+			if (id != null)
+			{
+				string placa = (from m in _database.MovimientoEstacionamiento
+								join v in _database.Vehiculo on m.IdVehiculo equals v.IdVehiculo
+								where m.IdMovimiento == id
+								select v.Placa).FirstOrDefault();
+				MovimientoEstacionamientoModel mov = new MovimientoEstacionamientoModel { Placa = placa };
+				return View(mov);
+			}
 			return View();
 		}
 
@@ -196,6 +303,7 @@ namespace ParqueoCentralWeb.Controllers
 			TempData["MessageType"] = "success";
 			return RedirectToAction("Index", "Home");
 		}
+
 
 		[HttpGet]
 		public ActionResult ObtenerMovimiento(string placa)
@@ -249,5 +357,6 @@ namespace ParqueoCentralWeb.Controllers
 
 			return horas;
 		}
+		#endregion
 	}
 }
