@@ -13,22 +13,19 @@ namespace ParqueoCentralWeb.Controllers
 	public class EspaciosController: Controller
 	{
 		private readonly ParqueoCentralDBEntities _database = new ParqueoCentralDBEntities();
-
+		/// <summary>
+		/// Obtiene la lista vista de los espacios almacenados en la base de datos
+		/// </summary>
+		/// <returns>Vista con los espacios almacenados</returns>
 		[HttpGet]
 		public ActionResult Index()
 		{
-			var espacios = _database.EspacioEstacionamiento.Select(v => new EspacioModel
-			{
-				IdEspacio = v.IdEspacio,
-				CodigoEspacio = v.CodigoEspacio,
-				TipoEspacio = v.TipoEspacio,
-				Estado = v.Estado,
-				Activo = v.Activo
-			}).ToList();
-
-			return View(espacios);
+			return View();
 		}
-
+		/// <summary>
+		/// Método para obtener la vista con el formulario para crear un nuevo espacio
+		/// </summary>
+		/// <returns>Vista para crear el formulario</returns>
 		[HttpGet]
 		public ActionResult Create()
 		{
@@ -36,7 +33,15 @@ namespace ParqueoCentralWeb.Controllers
 			return View();
 		}
 
+		/// <summary>
+		/// Inserta un nuevo objeto de tipo Espacio en la base de datos con los datos que el cliente envía
+		/// Se hace la validación del modelo
+		/// </summary>
+		/// <param name="espacio">Datos del cliente del espacio a insertar</param>
+		/// <returns>Redirecciona a Inicio en caso de que se ingrese exitosamente, de lo contrario 
+		/// regresa a la vista de crear con los errores obtenidos</returns>
 		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public ActionResult Create(EspacioModel espacio)
 		{
 			if (_database.EspacioEstacionamiento.Any(v => v.CodigoEspacio == espacio.CodigoEspacio))
@@ -64,6 +69,11 @@ namespace ParqueoCentralWeb.Controllers
 			return RedirectToAction("Index");
 		}
 
+		/// <summary>
+		/// Método que obtiene la vista para editar los datos de un espacio
+		/// </summary>
+		/// <param name="id">Id del objeto que se quiere editar. Es obligatorio</param>
+		/// <returns>Vista con los datos del espacio en un formulario</returns>
 		[HttpGet]
 		public ActionResult Edit(int id)
 		{
@@ -83,7 +93,14 @@ namespace ParqueoCentralWeb.Controllers
 			return View(espacio);
 		}
 
+		/// <summary>
+		/// Método POST que modifica los datos del espacio con los nuevos datos ingresados por el usuario
+		/// </summary>
+		/// <param name="espacio">Objeto con los datos del espacio modificados</param>
+		/// <returns>Redirecciona al inicio en caso de que los datos se hayan modificado correctamente.
+		/// En caso contrario recarga la página con los mensajes de error pertinentes</returns>
 		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public ActionResult Edit(EspacioModel espacio)
 		{
 			if (_database.Vehiculo.Any(e => e.Placa == espacio.CodigoEspacio &&
@@ -114,7 +131,11 @@ namespace ParqueoCentralWeb.Controllers
 
 			return RedirectToAction("Index");
 		}
-
+		/// <summary>
+		/// Método que obtiene la vista con los datos de un espacio especificado
+		/// </summary>
+		/// <param name="id">Id del espacio del que se desea ver los detalles</param>
+		/// <returns>Vista con los detalles del espacio</returns>
 		[HttpGet]
 		public ActionResult Details(int id)
 		{
@@ -133,10 +154,23 @@ namespace ParqueoCentralWeb.Controllers
 			return View(espacio);
 		}
 
+		/// <summary>
+		/// Borra un espacio que esté almacenado en la base de datos, pero que no tenga ningún movimiento asociado
+		/// </summary>
+		/// <param name="id">Id del espacio que se quiere eliminar</param>
+		/// <returns>Redirecciona a la lista de los espacios con un mensaje de confirmación o error</returns>
 		[HttpGet]
 		public ActionResult Delete(int id)
 		{
+			if(_database.MovimientoEstacionamiento.Count(m => m.IdEspacio == id) > 0)
+			{
+				TempData["Message"] = "No se puede eliminar un espacio utilizado en un movimiento";
+				TempData["MessageType"] = "danger";
+				return RedirectToAction("Index");
+			}
+
 			EspacioEstacionamiento espacioBorrar = _database.EspacioEstacionamiento.Find(id);
+
 			try
 			{
 				_database.EspacioEstacionamiento.Remove(espacioBorrar);
@@ -154,7 +188,17 @@ namespace ParqueoCentralWeb.Controllers
 
 			return RedirectToAction("Index");
 		}
-
+		/// <summary>
+		/// Método que valida si un espacio se encuentra almacenado en la base de datos.
+		/// Esto previene que dos espacios sean guardados con el mismo código de espacio.
+		/// Se verifica que no haya un espacio almacenado en la base de datos con ese mismo código, en caso
+		/// de que lo haya se verifica que no sea el mismo espacio que se está editando
+		/// </summary>
+		/// <param name="codigoEspacio">Código del espacio que se desea verificar</param>
+		/// <param name="idEspacio">Opcional. Id del espacio que se está editando, permite verificar si el codigo
+		/// almacenado pertenece al espacio que se está editando, en caso contrario lo notifica</param>
+		/// <returns>true = Existe un código ya registrado
+		///			 false = No existe un código igual registrado</returns>
 		[HttpGet]
 		public JsonResult ValidarCodigo(string codigoEspacio, int? idEspacio)
 		{
@@ -165,6 +209,11 @@ namespace ParqueoCentralWeb.Controllers
 			return Json(!existe, JsonRequestBehavior.AllowGet);
 		}
 
+		/// <summary>
+		/// Obtiene los espacios que están almacenados en la base de datos para llenar la tabla
+		/// de la vista Index. En la Request se envían los parámetros para filtrar los datos
+		/// </summary>
+		/// <returns>Objeto DataTableResponse con los datos filtrados</returns>
 		[HttpPost]
 		public JsonResult ObtenerEspacios()
 		{

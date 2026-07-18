@@ -64,5 +64,21 @@ namespace ParqueoCentralWeb.Models
 		[Display(Name = "Usuario que Registró")] 
 		public string UsuarioRegistro { get; set; }
 
+		public void CalcularDatosParaSalida()
+		{
+			this.FechaHoraSalida = DateTime.Now;
+			this.ObtenerTiempoParqueado();
+			this.MontoCobrado = (decimal)this.TiempoParqueado * 500;
+		}
+
+		public void ObtenerTiempoParqueado()
+		{
+			if (this.FechaHoraSalida == null)
+				this.FechaHoraSalida = DateTime.Now;
+
+			TimeSpan time = this.FechaHoraSalida.Value - this.FechaHoraEntrada;
+
+			this.TiempoParqueado = Math.Round(time.TotalHours, 1);
+		}
 	}
 }

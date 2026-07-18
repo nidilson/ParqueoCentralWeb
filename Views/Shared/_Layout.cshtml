@@ -24,6 +24,7 @@
 
                 </button>
                 @Html.ActionLink("Parqueo Central Web", "Index", "Home", new { area = "" }, new { @class = "navbar-brand text-dark" })
+                <span>Bienvenido, @Session["Operador"] </span>
             </div>
         </nav>
     </header>
