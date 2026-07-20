@@ -394,3 +394,6 @@ La aplicación se abrirá en el navegador.
 
 Para el desarrollo de esta tarea utilicé las herramientas Chat-GPT y Google Stitch como apoyo para la generación de código y de interfaces gráficas. El código, la lógica implementada y el documento final fueron revisados, comprendidos y ajustados por mi persona.
 
+Puede observar el video de presentación en el siguiente enlace
+[Video Presentacion](https://unedcr-my.sharepoint.com/:v:/g/personal/nidilson_rodriguez_uned_cr/IQBLuEXM1k-wSKfE4Ku4lK0yARQFwN9Ec8X3BNOh-LAJyCE?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=rXlEY5)
+
